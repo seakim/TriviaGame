@@ -1,0 +1,39 @@
+body {
+    padding: 70px 0 100px;
+}
+#rcb {
+    color: white;
+    text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+#reg {
+    float: right;
+    margin: 2% -2%;
+}
+#adv {
+    float: right;
+    margin: 2% 5%;
+}
+#timer {
+    position: fixed;
+    top: 3%;
+    right: 5%;
+    color: rgba(1,1,1,0.3);
+    font-weight: bold;
+}
+
+.submit {
+    float: right;
+}
+.next {
+    position: absolute;
+    bottom: 30%;
+    right: 20%;
+}
+
+.result {
+    padding-top: 30px;
+    text-align: center;
+}
