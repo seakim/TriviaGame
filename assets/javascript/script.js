@@ -1,30 +1,29 @@
-
-
-
-var intervalId;
-
 $(document).ready(function () {
-
-    // ### Option One: Basic Quiz (Timed Form)
-    var timeCount = {
-        time: 120,
-        reset: function () {
-            clearInterval(intervalId);
-            this.time = 120;
-        },
+    // ### Timer component for Option One: Basic Quiz (Timed Form)
+    var timer = {
+        clockRunning: false,
+        intervalId: null,
+        container: null,
         start: function () {
-            intervalId = setInterval(this.count, 100);
+            if (!this.clockRunning) {
+                this.time = 120;
+                this.intervalId = setInterval(this.count.bind(this), 50);
+                this.clockRunning = true;
+            }
         },
         stop: function () {
-            clearInterval(intervalId);
+            clearInterval(this.intervalId);
+            this.clockRunning = false;
         },
         count: function () {
-            timeCount.time--;
-            // console.log(timeCount.timeConverter(timeCount.time));
-            $("#timer").html(timeCount.timeConverter(timeCount.time));
+            this.time--;
+            var converted = this.timeConverter(this.time);
+            $("#timer").html(converted);
+            // console.log(this.time);
+            if (this.time <= 0) {
+                this.stop();
 
-            if (timeCount.time <= 0) {
-                timeCount.stop();
+                //??? How can I keep this timer component separately with this Jquery function ???
                 showScore();
             }
         },
@@ -45,35 +44,53 @@ $(document).ready(function () {
     }
 
     // ### Option Two: Advanced Assignment (Timed Questions)
-    var timeCountAdv = {
-        time: 15,   //??? this initial time setup is the only difference.  Can I make it DRY ???
-        reset: function () {
-            clearInterval(intervalId);
-            this.time = 15;
-        },
+    //??? Below code is not working to DRY it ???
+    // var timer15 = $.extend(true, {}, timer);
+    // timer15.time = 15;
+    // timer15.converted = timer15.timeConverter(timer15.time);
+    // console.log(timer);
+    // console.log(timer15);
+
+    var timer15 = {
+        clockRunning: false,
+        intervalId: null,
+        container: null,
         start: function () {
-            intervalId = setInterval(this.count, 500);
+            if (!this.clockRunning) {
+                this.time = 15;
+                this.intervalId = setInterval(this.count.bind(this), 1000);
+                this.clockRunning = true;
+            }
         },
         stop: function () {
-            clearInterval(intervalId);
+            clearInterval(this.intervalId);
+            this.clockRunning = false;
         },
         count: function () {
-            timeCount.time--;
-            // console.log(timeCount.timeConverter(timeCount.time));
-            $("#timer").html(timeCount.timeConverter(timeCount.time));
+            this.time--;
+            var converted = this.timeConverter(this.time);
+            $("#timer").html(converted);
+            // console.log(this.time);
+            if (this.time <= 0) {
+                this.stop();
 
-            if (timeCount.time <= 0) {
-                timeCount.stop();
-                showScore();
+                //??? How can I keep this timer component separately with this Jquery function ???
+                // showAnswer
             }
         },
         timeConverter: function (t) {
-            var seconds = t;
+            var minutes = Math.floor(t / 60);
+            var seconds = t - (minutes * 60);
 
             if (seconds < 10) {
                 seconds = "0" + seconds;
             }
-            return "00:" + seconds;
+            if (minutes === 0) {
+                minutes = "00";
+            } else if (minutes < 10) {
+                minutes = "0" + minutes;
+            }
+            return minutes + ":" + seconds;
         }
     }
 
@@ -81,11 +98,9 @@ $(document).ready(function () {
         var score = 0;
         $(".trivia").hide();
         $(".result").fadeIn(2000);
-        $(".try").fadeIn(5000);
+        $(".retry-btn").fadeIn(5000);
         $('input[type="radio"]:checked').each(function () {
-            if (this.value === '1') {
-                score += 10;
-            }
+            if (this.value === '1') score += 10;
         });
         if (score === 0) {
             $(".result h2").html("Thank you for checking this out !!! <br><br>BTW... your score is 0 <br><br><br>Do you wanna try it again?<br><br>");
@@ -98,54 +113,95 @@ $(document).ready(function () {
         }
     }
 
-    // start the game
-    // default .trivia & .result are hidden
-    $(".trivia").hide();
-    $(".result").hide();
-    $(".try").hide();
+    function start() {
+        $(".trivia").hide();
+        $(".result").hide();
+        $(".retry-btn").hide();
+    }
+
+    function showAll() {
+        $(".intro").hide();
+        $(".next-btn").hide();
+        $(".trivia").fadeIn(1000);
+        timer.start();
+    }
+
+    function retry() {
+        $(".result").hide();
+        $(".trivia").fadeIn(1000);
+        timer.start();
+    }
+
+    function showOne() {
+        $(".intro").hide();
+        $(".trivia").show();
+        $(".question").hide();
+        $(".q1").show();
+        $(".submit-btn").hide();
+        timer15.start();
+    }
+
+
+    // start
+    start();
     // two options: regular and advance
     $('#reg, #adv').on('click', function () {
 
-        // if regular
+        // ### reg
         if (this.id === 'reg') {
-            $(".intro").hide();
-            $(".next").hide();
-            $(".trivia").fadeIn(1000);
-            timeCount.start();
+            showAll();
 
-            //??? can I call this condition outside of the timeCount.count() so I can have both this and button to trigger the event ???
-            // if time === 0 || click on .submit, show score
-            // if (timeCount.time == 0) {
-            //     showScore();
-            // }
+            //??? How can I keep this timer component separately with this Jquery function ???
 
-            $(".submit").on("click", function () {
+            $("submit-btn").on("click", function () {
+                timer.stop();
                 showScore();
-                timeCount.stop();
+            });
+            $(".retry-btn").on("click", function () {
+                retry();
             });
 
-            // if click on .try, go back to the game
-            $(".try").on("click", function () {
-                $(".result").hide();
-                $(".trivia").fadeIn(1000);
-                timeCount.reset();
-                timeCount.start();
-            });
 
-        // if advance
+            // ### advance
         } else if (this.id === 'adv') {
-            var nthQuestion = 2;
-            $(".intro").hide();
-            $(".trivia").show();
-            $(".question").hide();
-            $(".q1").show();
-            $(".submit").hide();
-            // start from this
-            $(".next").on("click", function () {
+            showOne();
+            var nthQuestion = 1;
+
+            $(".next-btn").on("click", function () {
                 console.log(nthQuestion);
-                $(".trivia .question:nth-child(" + nthQuestion + ")").show();
-                $(".trivia .question:nth-child(" + (nthQuestion - 1) + ")").hide();
-                nthQuestion++;
+                $('input[type="radio"]:checked').each(function () {
+
+                    // $(".question:nth-child(" + (nthQuestion) + ")").hide();
+                    // $(".next-btn").hide();
+                    // * If the player runs out of time, tell the player that time's up and display the correct answer. Wait a few seconds, then show the next question.
+                    if (this.value === '1') {
+                        nthQuestion++;
+
+                        // setTimeout( function () {
+
+                        //??? if I uncoment below, nthQuestion number doesn't increase by 1 when 'next' is clicked.
+                            // $(".question:nth-child(" + nthQuestion + ")").fadeIn(2000);
+
+                            // $(".next-btn").fadeIn(4000);
+                        // }, 1000);
+                    // * If the player chooses the wrong answer, tell the player they selected the wrong option and then display the correct answer. 
+                    } else {
+                        // var correctAns = $('.question:nth-child(' + nthQuestion + ') input[value="1"]').next().html();
+                        // var youGotItWrong = "<div class='correct'><h3>You selected wrong answer :(</h3><br>The correct answer is: &emsp;<b>" + correctAns +"</b></div>";
+                        // $(".trivia").append(youGotItWrong);
+                        // nthQuestion++;
+                        // setTimeout( function () {
+                        //     $('.correct').hide();
+                        //     $(".question:nth-child(" + nthQuestion + ")").fadeIn(2000);
+                        //     $(".next-btn").fadeIn(4000);
+                        // }, 6000);
+
+                    }
+                });
+
+                // nthQuestion++;
+                // $(".trivia .question:nth-child(" + nthQuestion + ")").show();
+
             });
         }
 
@@ -153,47 +209,7 @@ $(document).ready(function () {
 
 
 
-
     });
-    // $(".trivia").hide();
-    // $(".result").hide();
-    // $(".try").hide();
-
-    // // game starts on click on body
-    // $("body").one("click", function() {
-    //     $(".intro").hide();
-    //     $(".trivia").fadeIn(1000);
-    //     timeCount.start();
-    // });
-
-    // //??? can I call this condition outside of the timeCount.count() so I can have both this and button to trigger the event ???
-    // // if time === 0 || click on .submit, show score
-    // // if (timeCount.time == 0) {
-    // //     showScore();
-    // // }
-
-    // $(".submit").on("click", function() {
-    //     showScore();
-    //     timeCount.stop();
-    // });
-
-    // // if click on .try, go back to the game
-    // $(".try").on("click", function() {
-    //     $(".result").hide();
-    //     $(".trivia").fadeIn(1000);
-    //     timeCount.reset();
-    //     timeCount.start();
-    // });
-
-
-
-
-
-
-
-
-
-
 
 });
 

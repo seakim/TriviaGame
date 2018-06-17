@@ -1,6 +1,9 @@
 body {
     padding: 70px 0 100px;
 }
+.container {
+    max-width: 720px;
+}
 #rcb {
     color: white;
     text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
@@ -24,13 +27,11 @@ body {
     font-weight: bold;
 }
 
-.submit {
+.submit-btn {
     float: right;
 }
-.next {
-    position: absolute;
-    bottom: 30%;
-    right: 20%;
+.next-btn {
+    float: right;
 }
 
 .result {
