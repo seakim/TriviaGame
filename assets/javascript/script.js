@@ -7,7 +7,7 @@ $(document).ready(function () {
         start: function () {
             if (!this.clockRunning) {
                 this.time = 120;
-                this.intervalId = setInterval(this.count.bind(this), 50);
+                this.intervalId = setInterval(this.count.bind(this), 1000);
                 this.clockRunning = true;
             }
         },
@@ -47,7 +47,6 @@ $(document).ready(function () {
     //??? Below code is not working to DRY it ???
     // var timer15 = $.extend(true, {}, timer);
     // timer15.time = 15;
-    // timer15.converted = timer15.timeConverter(timer15.time);
     // console.log(timer);
     // console.log(timer15);
 
@@ -94,25 +93,6 @@ $(document).ready(function () {
         }
     }
 
-    function showScore() {
-        var score = 0;
-        $(".trivia").hide();
-        $(".result").fadeIn(2000);
-        $(".retry-btn").fadeIn(5000);
-        $('input[type="radio"]:checked').each(function () {
-            if (this.value === '1') score += 10;
-        });
-        if (score === 0) {
-            $(".result h2").html("Thank you for checking this out !!! <br><br>BTW... your score is 0 <br><br><br>Do you wanna try it again?<br><br>");
-        } else if (score < 50) {
-            $(".result h2").html("You got an A for Effort! <br><br>But.... your score is  " + score + "/100.<br><br><br>Let's try again !!!<br><br>");
-        } else if (score < 70) {
-            $(".result h2").html("Nice try !!! <br><br>Your score is  " + score + "/100 <br><br><br>You might get 100 if you try again !!!<br><br>");
-        } else if (score === 100) {
-            $(".result h2").html("You got the PERFECT score !!! <br><br><br>Hope you enjoyed it !!!<br><br>")
-        }
-    }
-
     function start() {
         $(".trivia").hide();
         $(".result").hide();
@@ -126,21 +106,84 @@ $(document).ready(function () {
         timer.start();
     }
 
+    function showScore() {
+        timer.stop();
+        var score = 0;
+        $(".trivia").hide();
+        $(".result").fadeIn(2000);
+        $(".retry-btn").fadeIn(5000);
+        $('input[type="radio"]:checked').each(function () {
+            console.log()
+            var isCorrect = $(this).parent().parent().attr("value");
+            if (isCorrect === '1') score += 10;
+            
+        });
+        if (score === 0) {
+            $(".result h2").html("Thank you for checking this out !!! <br><br>BTW... your score is 0 <br><br><br>Do you wanna try it again?<br><br>");
+        } else if (score < 50) {
+            $(".result h2").html("You got an A for Effort! <br><br>But.... your score is  " + score + "/100.<br><br><br>Let's try again !!!<br><br>");
+        } else if (score < 100) {
+            $(".result h2").html("Nice try !!! <br><br>Your score is  " + score + "/100 <br><br><br>You might get 100 if you try again !!!<br><br>");
+        } else if (score === 100) {
+            $(".result h2").html("You got the PERFECT score !!! <br><br><br>Hope you enjoyed it !!!<br><br>")
+        }
+    }
+
     function retry() {
+        $('input[type="radio"]:checked').each(function () {
+            $(this).prop('checked', false);
+        });
         $(".result").hide();
         $(".trivia").fadeIn(1000);
         timer.start();
+    }
+
+    function showScoreAdv() {
+        // timer15.stop();
+        // $(".submit-btn").hide();
+        // $(".next-btn").hide();
+        // $(".result").fadeIn(2000);
+        // $(".retry-btn").fadeIn(5000);
+        // //??? cannot reference the value of scAdv; ???
+        // var scAdv = selectedRadio.scAdv;
+        // if (scAdv === 0) {
+        //     $(".result h2").html("Thank you for checking this out !!! <br><br>BTW... your score is 0 <br><br><br>Do you wanna try it again?<br><br>");
+        // } else if (scAdv < 50) {
+        //     $(".result h2").html("You got an A for Effort! <br><br>But.... your score is  " + scAdv + "/100.<br><br><br>Let's try again !!!<br><br>");
+        // } else if (scAdv < 70) {
+        //     $(".result h2").html("Nice try !!! <br><br>Your score is  " + scAdv + "/100 <br><br><br>You might get 100 if you try again !!!<br><br>");
+        // } else if (scAdv === 100) {
+        //     $(".result h2").html("You got the PERFECT score !!! <br><br><br>Hope you enjoyed it !!!<br><br>")
+        // }
+        // $(".retry-btn").on("click", function () {
+        //     scAdv = 0;
+        //     $(".next-btn").attr('value', '1');
+        //     $('input[type="radio"]:checked').each(function () {
+        //         $(this).prop('checked', false);
+        //     });
+        //     retryAdv();
+        // });
     }
 
     function showOne() {
         $(".intro").hide();
         $(".trivia").show();
         $(".question").hide();
-        $(".q1").show();
         $(".submit-btn").hide();
+        $(".q1").show();
+        $(".next-btn").show();
+        timer15.stop();
         timer15.start();
     }
 
+    function youGotItCorrect() {
+        $('.trivia').append("<h1 class='correct'>Congrats !!! Your answer is correct !!!</h1>")
+    }
+
+    function retryAdv() {
+        $(".result").hide();
+        showOne();
+    }
 
     // start
     start();
@@ -153,54 +196,99 @@ $(document).ready(function () {
 
             //??? How can I keep this timer component separately with this Jquery function ???
 
-            $("submit-btn").on("click", function () {
-                timer.stop();
+            $(".submit-btn").on("click", function () {
                 showScore();
             });
             $(".retry-btn").on("click", function () {
                 retry();
-            });
-
-
-            // ### advance
-        } else if (this.id === 'adv') {
+            }); 
+        } 
+        
+        // ### advance
+        if (this.id === 'adv') {
+            var scAdv = 0;
+            // show first question
             showOne();
-            var nthQuestion = 1;
-
             $(".next-btn").on("click", function () {
-                console.log(nthQuestion);
-                $('input[type="radio"]:checked').each(function () {
 
-                    // $(".question:nth-child(" + (nthQuestion) + ")").hide();
-                    // $(".next-btn").hide();
-                    // * If the player runs out of time, tell the player that time's up and display the correct answer. Wait a few seconds, then show the next question.
-                    if (this.value === '1') {
-                        nthQuestion++;
+                timer15.stop();
+                timer15.start();
+                var selectedRadio = $('input[type="radio"]:checked');
+                selectedRadio.each(function () {
+                    var currentQuestion = $(this).parent().parent().parent();
 
-                        // setTimeout( function () {
+                    if ($(currentQuestion).attr("value") === $(".next-btn").val()) {
+                        $(".next-btn").attr("value", parseInt($(".next-btn").val()) + 1);
+                        // console.log($(".next-btn").val());
+                        console.log($(this));
+                        $(currentQuestion).hide();
+                        $(".next-btn").hide();
 
-                        //??? if I uncoment below, nthQuestion number doesn't increase by 1 when 'next' is clicked.
-                            // $(".question:nth-child(" + nthQuestion + ")").fadeIn(2000);
+                        // * If the player runs out of time, tell the player that time's up and display the correct answer. Wait a few seconds, then show the next question.
 
-                            // $(".next-btn").fadeIn(4000);
-                        // }, 1000);
-                    // * If the player chooses the wrong answer, tell the player they selected the wrong option and then display the correct answer. 
-                    } else {
-                        // var correctAns = $('.question:nth-child(' + nthQuestion + ') input[value="1"]').next().html();
-                        // var youGotItWrong = "<div class='correct'><h3>You selected wrong answer :(</h3><br>The correct answer is: &emsp;<b>" + correctAns +"</b></div>";
-                        // $(".trivia").append(youGotItWrong);
-                        // nthQuestion++;
-                        // setTimeout( function () {
-                        //     $('.correct').hide();
-                        //     $(".question:nth-child(" + nthQuestion + ")").fadeIn(2000);
-                        //     $(".next-btn").fadeIn(4000);
-                        // }, 6000);
 
+                        // * If the player selects the correct answer, show a screen congratulating them for choosing the right option. 
+                        // After a few seconds, display the next question -- do this without user input.
+                        // console.log($(this).parent().parent().attr('value'));
+                        var isCorrect = $(this).parent().parent().attr("value");
+                        if (isCorrect === '1') {
+                            scAdv += 10;
+                            console.log($(this));
+                            // console.log(scAdv);
+                            youGotItCorrect();
+                            setTimeout(() => {
+                                $('.correct').hide();
+                            }, 3000);
+                            setTimeout(() => {
+                                $(currentQuestion).next().fadeIn(1000);
+                                $(".next-btn").fadeIn(2000);
+                            }, 3000);
+                        }
+                        // * If the player chooses the wrong answer, tell the player they selected the wrong option and then display the correct answer. 
+                        else {
+                            // console.log(currentQuestion.children('div[value="1"]').children());
+                            var correctAns = currentQuestion.children('div[value="1"]').children().text();
+                            var youGotItWrong = "<div class='correctAns'><h3>You selected wrong answer :(</h3><br>The correct answer is: &emsp;<b>" + correctAns + "</b></div>";
+                            $(".trivia").append(youGotItWrong);
+                            setTimeout(function () {
+                                $('.correctAns').hide();
+                                $(currentQuestion).next().fadeIn(1000);
+                                $(".next-btn").fadeIn(2000);
+                            }, 3000);
+                        }
                     }
-                });
+                    if (parseInt($(".next-btn").val()) > 10) {
+                        setTimeout(function () {
+                            // showScoreAdv();
+                            /////
+                            console.log("total = " + scAdv);
+                            timer15.stop();
+                            $(".submit-btn").hide();
+                            $(".next-btn").hide();
+                            $(".result").fadeIn(2000);
+                            $(".retry-btn").fadeIn(5000);
+                            if (scAdv === 0) {
+                                $(".result h2").html("Thank you for checking this out !!! <br><br>BTW... your score is 0 <br><br><br>Do you wanna try it again?<br><br>");
+                            } else if (scAdv < 50) {
+                                $(".result h2").html("You got an A for Effort! <br><br>But.... your score is  " + scAdv + "/100.<br><br><br>Let's try again !!!<br><br>");
+                            } else if (scAdv < 70) {
+                                $(".result h2").html("Nice try !!! <br><br>Your score is  " + scAdv + "/100 <br><br><br>You might get 100 if you try again !!!<br><br>");
+                            } else if (scAdv === 100) {
+                                $(".result h2").html("You got the PERFECT score !!! <br><br><br>Hope you enjoyed it !!!<br><br>")
+                            }
+                            $(".retry-btn").on("click", function () {
+                                scAdv = 0;
+                                $(".next-btn").attr('value', '1');
+                                $('input[type="radio"]:checked').each(function () {
+                                    $(this).prop('checked', false);
+                                });
+                                retryAdv();
+                            });
+                            /////
+                        }, 1000);
+                    }
 
-                // nthQuestion++;
-                // $(".trivia .question:nth-child(" + nthQuestion + ")").show();
+                });
 
             });
         }
