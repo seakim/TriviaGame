@@ -38,3 +38,8 @@ body {
     padding-top: 30px;
     text-align: center;
 }
+
+.selectedAnswer {
+    font-weight: bold;
+    color: green;
+}
