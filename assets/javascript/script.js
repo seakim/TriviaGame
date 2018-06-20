@@ -1,4 +1,44 @@
+var questionArr = [
+    "1. In the year 1900 in the U.S. what were the most popular first names given to boy and girl babies?",
+    "2. When did the Liberty Bell get its name?",
+    "3. In the Roy Rogers -Dale Evans Museum, you will find Roy and Dales stuffed horses. Roy's horse was named Trigger, which was Dales horse?",
+    "4. The Daniel Boon museum at the home where he died can best be described how?",
+    "5. Which of the following items was owned by the fewest U.S. homes in 1990?",
+    "6. Who holds the record for the most victories in a row on the professional golf tour?",
+    "7. Who is third behind Hank Aaron and Babe Ruth in major league career home runs?",
+    "8. In 1990, in what percentage of U.S. married couples did the wife earn more money than the husband?",
+    "9. During the 1980s for six consecutive years what breed of dog was the most popular in the U.S.?",
+    "10. The first black American pictured on a U.S. postage stamp was who?"
+];
+
+var mcArr = [
+    ["A. William and Elizabeth", "B. Joseph and Catherine", "C. John and Mary", "D. George and Anne"],
+    ["A. when it was made, in 1701", "B. when it rang on July 4, 1776", "C. in the 19th century, when it became a symbol of the abolition of slavery", "D. none of the above"],
+    ["A. Buttermilk", "B. Daisy", "C. Scout", "D. Tulip"],
+    ["A. a log cabin in Kentucky", "B. a two-story clapboard house in Tennessee", "C. a four-story Georgian-style home in Missouri", "D. a three story brick house in Arkansas"],
+    ["A. home computer", "B. compact disk player", "C. cordless phone", "D. dishwasher"],
+    ["A. Jack Nicklaus", "B. Arnold Palmer", "C. Byron Nelson", "D. Ben Hogan"],
+    ["A. Reggie Jackson", "B. Harmon Killebrew", "C. Willie Mays", "D. Frank Robinson"],
+    ["A. 8", "B. 18", "C. 38", "D. 58"],
+    ["A. cocker spaniel", "B. German shepherd", "C. Labrador retriever", "D. poodle"],
+    ["A. Frederick Douglass", "B. Booker T. Washington", "C. Louis Armstrong", "D. Joe Louis"]
+];
+
+var answerArr = [
+    "C. John and Mary",
+    "C. in the 19th century, when it became a symbol of the abolition of slavery",
+    "A. Buttermilk",
+    "C. a four-story Georgian-style home in Missouri",
+    "B. compact disk player",
+    "C. Byron Nelson",
+    "C. Willie Mays",
+    "B. 18",
+    "A. cocker spaniel",
+    "D. Joe Louis"
+];
+
 $(document).ready(function () {
+    
     // ### Timer component for Option One: Basic Quiz (Timed Form)
     var timer = {
         clockRunning: false,
@@ -93,6 +133,30 @@ $(document).ready(function () {
         }
     }
 
+    var showAll1 = {
+        addQuestions: function () {
+            for (var i = 0; i < questionArr.length; i++) {
+                var mc = '';
+                for (var j = 0; j < mcArr[i].length; j++) {
+                    mc += '<div class="mc mc'+ i +'">' + mcArr[i][j] + '</div>'
+                }
+                var question = '<div class="question q1" id="1" value="1"><h5>' + questionArr[i] +'</h5>' + mc + '<br></div>'
+                $('.trivia').append(question);
+            }
+            $('.trivia').append(this.submit_btn);
+
+            /////
+            $('.mc').on('click', this, function () {
+                $('.mc').css('font-weight', 'bold');
+            })
+        },
+        submit_btn: '<button type="button" class="btn btn-success submit-btn">Submit</button>'
+    }
+    // showAll1.addQuestions();
+
+
+
+
     function start() {
         $(".trivia").hide();
         $(".result").hide();
@@ -116,7 +180,7 @@ $(document).ready(function () {
             console.log()
             var isCorrect = $(this).parent().parent().attr("value");
             if (isCorrect === '1') score += 10;
-            
+
         });
         if (score === 0) {
             $(".result h2").html("Thank you for checking this out !!! <br><br>BTW... your score is 0 <br><br><br>Do you wanna try it again?<br><br>");
@@ -185,6 +249,8 @@ $(document).ready(function () {
         showOne();
     }
 
+
+
     // start
     start();
     // two options: regular and advance
@@ -201,9 +267,9 @@ $(document).ready(function () {
             });
             $(".retry-btn").on("click", function () {
                 retry();
-            }); 
-        } 
-        
+            });
+        }
+
         // ### advance
         if (this.id === 'adv') {
             var scAdv = 0;
