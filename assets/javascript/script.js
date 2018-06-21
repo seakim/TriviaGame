@@ -133,7 +133,7 @@ $(document).ready(function () {
         }
     }
 
-    var showAll1 = {
+    var showAdv = {
         addQuestions: function () {
             for (var i = 0; i < questionArr.length; i++) {
                 var mc = '';
@@ -147,12 +147,11 @@ $(document).ready(function () {
 
             /////
             $('.mc').on('click', this, function () {
-                $('.mc').css('font-weight', 'bold');
+                $(this).css('font-weight', 'bold');
             })
         },
         submit_btn: '<button type="button" class="btn btn-success submit-btn">Submit</button>'
     }
-    // showAll1.addQuestions();
 
 
 
@@ -253,24 +252,21 @@ $(document).ready(function () {
 
     // start
     start();
-    // two options: regular and advance
-    $('#reg, #adv').on('click', function () {
 
-        // ### reg
-        if (this.id === 'reg') {
-            showAll();
+    // ### reg
+    $('#reg').on('click', function () {
+        showAll();
+        //??? How can I keep this timer component separately with this Jquery function ???
+        $(".submit-btn").on("click", function () {
+            showScore();
+        });
+        $(".retry-btn").on("click", function () {
+            retry();
+        });
+    });
 
-            //??? How can I keep this timer component separately with this Jquery function ???
-
-            $(".submit-btn").on("click", function () {
-                showScore();
-            });
-            $(".retry-btn").on("click", function () {
-                retry();
-            });
-        }
-
-        // ### advance
+    // ### advance
+    $('#adv').on('click', function () {
         if (this.id === 'adv') {
             var scAdv = 0;
             // show first question
