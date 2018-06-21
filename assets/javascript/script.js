@@ -37,122 +37,85 @@ var answerArr = [
     "D. Joe Louis"
 ];
 
+// show answers
+console.log("answers:");
+for (var i = 0; i < answerArr.length; i++) {
+    console.log(answerArr[i]);
+}
+
+
 $(document).ready(function () {
-    
+
+    // using timerTemp and $.extend(true, {}, timerTemp);
+    var timerTemp = {
+        clockRunning: false,
+        intervalId: null,
+        container: null,
+        time: null,
+        setContainer: function(number) {
+            this.container = $('#timer');
+            this.time = parseInt(number);
+        },
+        //??? how can I set 'reset' as default time without passing parameter? ???
+        reset: function(number) {
+            clearInterval(this.intervalId);
+            this.clockRunning = false;
+            this.time = parseInt(number);
+        },
+        start: function () {
+            if (!this.clockRunning) {
+                this.intervalId = setInterval(this.count.bind(this), 500);
+                this.clockRunning = true;
+            }
+        },
+        stop: function () {
+            clearInterval(this.intervalId);
+            this.clockRunning = false;
+        },
+        count: function () {
+            this.time--;
+            var converted = this.timeConverter(this.time);
+            this.container.html(converted);
+            if (this.time <= 0) {
+                this.stop();
+
+                //??? How can I keep this timer component separately with this Jquery function ???
+                // this will mess up adv option
+                // showScore();
+                // console.log(this);
+            }
+        },
+        timeConverter: function (t) {
+            var minutes = Math.floor(t / 60);
+            var seconds = t - (minutes * 60);
+
+            if (seconds < 10) {
+                seconds = "0" + seconds;
+            }
+            if (minutes === 0) {
+                minutes = "00";
+            } else if (minutes < 10) {
+                minutes = "0" + minutes;
+            }
+            return minutes + ":" + seconds;
+        }
+    }
+
+    var timerArray = [];
+    var timerReg = $.extend(true, {}, timerTemp);
+    var timerAdv = $.extend(true, {}, timerTemp);
+    timerReg.setContainer(120);
+    timerAdv.setContainer(15);
+    timerArray.push(timerReg, timerAdv);
+    console.log(timerArray);
+
+
+
     // ### Timer component for Option One: Basic Quiz (Timed Form)
-    var timer = {
-        clockRunning: false,
-        intervalId: null,
-        container: null,
-        start: function () {
-            if (!this.clockRunning) {
-                this.time = 120;
-                this.intervalId = setInterval(this.count.bind(this), 1000);
-                this.clockRunning = true;
-            }
-        },
-        stop: function () {
-            clearInterval(this.intervalId);
-            this.clockRunning = false;
-        },
-        count: function () {
-            this.time--;
-            var converted = this.timeConverter(this.time);
-            $("#timer").html(converted);
-            // console.log(this.time);
-            if (this.time <= 0) {
-                this.stop();
+    var showAll = {
 
-                //??? How can I keep this timer component separately with this Jquery function ???
-                showScore();
-            }
-        },
-        timeConverter: function (t) {
-            var minutes = Math.floor(t / 60);
-            var seconds = t - (minutes * 60);
-
-            if (seconds < 10) {
-                seconds = "0" + seconds;
-            }
-            if (minutes === 0) {
-                minutes = "00";
-            } else if (minutes < 10) {
-                minutes = "0" + minutes;
-            }
-            return minutes + ":" + seconds;
-        }
+        
     }
-
-    // ### Option Two: Advanced Assignment (Timed Questions)
-    //??? Below code is not working to DRY it ???
-    // var timer15 = $.extend(true, {}, timer);
-    // timer15.time = 15;
-    // console.log(timer);
-    // console.log(timer15);
-
-    var timer15 = {
-        clockRunning: false,
-        intervalId: null,
-        container: null,
-        start: function () {
-            if (!this.clockRunning) {
-                this.time = 15;
-                this.intervalId = setInterval(this.count.bind(this), 1000);
-                this.clockRunning = true;
-            }
-        },
-        stop: function () {
-            clearInterval(this.intervalId);
-            this.clockRunning = false;
-        },
-        count: function () {
-            this.time--;
-            var converted = this.timeConverter(this.time);
-            $("#timer").html(converted);
-            // console.log(this.time);
-            if (this.time <= 0) {
-                this.stop();
-
-                //??? How can I keep this timer component separately with this Jquery function ???
-                // showAnswer
-            }
-        },
-        timeConverter: function (t) {
-            var minutes = Math.floor(t / 60);
-            var seconds = t - (minutes * 60);
-
-            if (seconds < 10) {
-                seconds = "0" + seconds;
-            }
-            if (minutes === 0) {
-                minutes = "00";
-            } else if (minutes < 10) {
-                minutes = "0" + minutes;
-            }
-            return minutes + ":" + seconds;
-        }
-    }
-
-    var showAdv = {
-        addQuestions: function () {
-            for (var i = 0; i < questionArr.length; i++) {
-                var mc = '';
-                for (var j = 0; j < mcArr[i].length; j++) {
-                    mc += '<div class="mc mc'+ i +'">' + mcArr[i][j] + '</div>'
-                }
-                var question = '<div class="question q1" id="1" value="1"><h5>' + questionArr[i] +'</h5>' + mc + '<br></div>'
-                $('.trivia').append(question);
-            }
-            $('.trivia').append(this.submit_btn);
-
-            /////
-            $('.mc').on('click', this, function () {
-                $(this).css('font-weight', 'bold');
-            })
-        },
-        submit_btn: '<button type="button" class="btn btn-success submit-btn">Submit</button>'
-    }
-
 
 
 
@@ -166,17 +129,16 @@ $(document).ready(function () {
         $(".intro").hide();
         $(".next-btn").hide();
         $(".trivia").fadeIn(1000);
-        timer.start();
+        timerReg.start();
     }
 
     function showScore() {
-        timer.stop();
+        timerReg.stop();
         var score = 0;
         $(".trivia").hide();
         $(".result").fadeIn(2000);
         $(".retry-btn").fadeIn(5000);
         $('input[type="radio"]:checked').each(function () {
-            console.log()
             var isCorrect = $(this).parent().parent().attr("value");
             if (isCorrect === '1') score += 10;
 
@@ -198,65 +160,107 @@ $(document).ready(function () {
         });
         $(".result").hide();
         $(".trivia").fadeIn(1000);
-        timer.start();
-    }
+        timerReg.reset(120);
+        timerReg.start();
 
-    function showScoreAdv() {
-        // timer15.stop();
-        // $(".submit-btn").hide();
-        // $(".next-btn").hide();
-        // $(".result").fadeIn(2000);
-        // $(".retry-btn").fadeIn(5000);
-        // //??? cannot reference the value of scAdv; ???
-        // var scAdv = selectedRadio.scAdv;
-        // if (scAdv === 0) {
-        //     $(".result h2").html("Thank you for checking this out !!! <br><br>BTW... your score is 0 <br><br><br>Do you wanna try it again?<br><br>");
-        // } else if (scAdv < 50) {
-        //     $(".result h2").html("You got an A for Effort! <br><br>But.... your score is  " + scAdv + "/100.<br><br><br>Let's try again !!!<br><br>");
-        // } else if (scAdv < 70) {
-        //     $(".result h2").html("Nice try !!! <br><br>Your score is  " + scAdv + "/100 <br><br><br>You might get 100 if you try again !!!<br><br>");
-        // } else if (scAdv === 100) {
-        //     $(".result h2").html("You got the PERFECT score !!! <br><br><br>Hope you enjoyed it !!!<br><br>")
-        // }
-        // $(".retry-btn").on("click", function () {
-        //     scAdv = 0;
-        //     $(".next-btn").attr('value', '1');
-        //     $('input[type="radio"]:checked').each(function () {
-        //         $(this).prop('checked', false);
-        //     });
-        //     retryAdv();
-        // });
-    }
-
-    function showOne() {
-        $(".intro").hide();
-        $(".trivia").show();
-        $(".question").hide();
-        $(".submit-btn").hide();
-        $(".q1").show();
-        $(".next-btn").show();
-        timer15.stop();
-        timer15.start();
-    }
-
-    function youGotItCorrect() {
-        $('.trivia').append("<h1 class='correct'>Congrats !!! Your answer is correct !!!</h1>")
-    }
-
-    function retryAdv() {
-        $(".result").hide();
-        showOne();
+        //??? this creates bug when I submit and retry
+        // don't have problem if showScore() is called inside of the timer object
+        setTimeout(() => {
+            showScore();
+        }, 12000);        
     }
 
 
+
+
+    // ### Option Two: Advanced Assignment (Timed Questions)
+    var showAdv = {
+        questionNum: 0,
+        score: 0,
+        moveToQuestion: function () {
+            $(".intro").hide();
+            $(".triviaAdv").show();
+        },
+        addQuestion: function () {
+            var mc = '';
+            for (var i = 0; i < mcArr[this.questionNum].length; i++) {
+                mc += '<div class="mc mc' + i + '">' + mcArr[this.questionNum][i] + '</div>'
+            }
+            var question = '<div class="question q1" id="1" time="1"><h5>' + questionArr[this.questionNum] + '</h5>' + mc + '<br></div>'
+            $('.triviaAdv').html(question);
+            if (this.questionNum < 10) {
+                timerAdv.reset(15);
+                timerAdv.start();
+                this.chooseAnswer();
+            }
+        },
+        chooseAnswer: function () {
+            $('.mc').on('click', this, function () {
+                $(this).toggleClass('selectedAnswer');
+                if ($(this).text() === answerArr[showAdv.questionNum]) {
+                    showAdv.ifCorrect();
+                } else {
+                    showAdv.ifWrong();
+                }
+            });
+        },
+        // start from this
+        ifNotAnswered: function() {
+            setTimeout(() => {
+                this.ifWrong();
+            }, 7500);
+        },
+        ifCorrect: function () {
+            var correct = "<h1 class='correct'>Congrats!!! You got it Correct!!!</h1>";
+            this.score += 10;
+            $('.triviaAdv').html(correct);
+            this.checkAns();
+        },
+        ifWrong: function () {
+            var wrong = "<div class='correctAns'><h3>Wrong!!! :(</h3><br>The correct answer is: &emsp;<b>" + answerArr[this.questionNum] + "</b></div>";
+            $('.triviaAdv').html(wrong);
+            this.checkAns();
+        },
+        checkAns: function () {
+            timerAdv.stop();
+            setTimeout(() => {
+                $('.triviaAdv:first-child').hide();
+                this.questionNum++;
+                console.log(this.questionNum);
+                if (this.questionNum === 10) {
+                    this.showScore();
+                } else {
+                    this.addQuestion();
+                }
+            }, 2000);
+        },
+        showScore: function () {
+            if (this.score === 0) {
+                $(".triviaAdv").html("<h2>Thank you for checking this out !!! <br><br>BTW... your score is 0 <br><br>Do you wanna try it again?<br><br><br></h2>");
+            } else if (this.score < 50) {
+                $(".triviaAdv").html("<h2>You got an A for Effort! <br><br>But.... your score is  " + this.score + "/100.<br><br>Let's try again !!!<br><br><br></h2>");
+            } else if (this.score < 100) {
+                $(".triviaAdv").html("<h2>Nice try !!! <br><br>Your score is  " + this.score + "/100 <br><br><br>You might get 100 if you try again !!!<br><br><br></h2>");
+            } else if (this.score === 100) {
+                $(".triviaAdv").html("<h2>You got the PERFECT score !!! <br><br>Hope you enjoyed it !!!<br><br><br></h2>");
+            }
+            $('.triviaAdv').append('<button type="button" class="btn btn-success" id="retry-btn">Try Again</button>');
+        },
+    }
 
     // start
     start();
 
-    // ### reg
+    // running code for reg
     $('#reg').on('click', function () {
         showAll();
-        //??? How can I keep this timer component separately with this Jquery function ???
+        //??? this creates bug when I submit and retry
+        // don't have problem if showScore() is called inside of the timer object
+        setTimeout(() => {
+            console.log(timerReg.time);
+            showScore();
+        }, 12000);
+
         $(".submit-btn").on("click", function () {
             showScore();
         });
@@ -264,118 +268,25 @@ $(document).ready(function () {
             retry();
         });
     });
-
-    // ### advance
+        
+    // running code for adv
     $('#adv').on('click', function () {
-        if (this.id === 'adv') {
-            var scAdv = 0;
-            // show first question
-            showOne();
-            $(".next-btn").on("click", function () {
-
-                timer15.stop();
-                timer15.start();
-                var selectedRadio = $('input[type="radio"]:checked');
-                selectedRadio.each(function () {
-                    var currentQuestion = $(this).parent().parent().parent();
-
-                    if ($(currentQuestion).attr("value") === $(".next-btn").val()) {
-                        $(".next-btn").attr("value", parseInt($(".next-btn").val()) + 1);
-                        // console.log($(".next-btn").val());
-                        console.log($(this));
-                        $(currentQuestion).hide();
-                        $(".next-btn").hide();
-
-                        // * If the player runs out of time, tell the player that time's up and display the correct answer. Wait a few seconds, then show the next question.
-
-
-                        // * If the player selects the correct answer, show a screen congratulating them for choosing the right option. 
-                        // After a few seconds, display the next question -- do this without user input.
-                        // console.log($(this).parent().parent().attr('value'));
-                        var isCorrect = $(this).parent().parent().attr("value");
-                        if (isCorrect === '1') {
-                            scAdv += 10;
-                            console.log($(this));
-                            // console.log(scAdv);
-                            youGotItCorrect();
-                            setTimeout(() => {
-                                $('.correct').hide();
-                            }, 3000);
-                            setTimeout(() => {
-                                $(currentQuestion).next().fadeIn(1000);
-                                $(".next-btn").fadeIn(2000);
-                            }, 3000);
-                        }
-                        // * If the player chooses the wrong answer, tell the player they selected the wrong option and then display the correct answer. 
-                        else {
-                            // console.log(currentQuestion.children('div[value="1"]').children());
-                            var correctAns = currentQuestion.children('div[value="1"]').children().text();
-                            var youGotItWrong = "<div class='correctAns'><h3>You selected wrong answer :(</h3><br>The correct answer is: &emsp;<b>" + correctAns + "</b></div>";
-                            $(".trivia").append(youGotItWrong);
-                            setTimeout(function () {
-                                $('.correctAns').hide();
-                                $(currentQuestion).next().fadeIn(1000);
-                                $(".next-btn").fadeIn(2000);
-                            }, 3000);
-                        }
-                    }
-                    if (parseInt($(".next-btn").val()) > 10) {
-                        setTimeout(function () {
-                            // showScoreAdv();
-                            /////
-                            console.log("total = " + scAdv);
-                            timer15.stop();
-                            $(".submit-btn").hide();
-                            $(".next-btn").hide();
-                            $(".result").fadeIn(2000);
-                            $(".retry-btn").fadeIn(5000);
-                            if (scAdv === 0) {
-                                $(".result h2").html("Thank you for checking this out !!! <br><br>BTW... your score is 0 <br><br><br>Do you wanna try it again?<br><br>");
-                            } else if (scAdv < 50) {
-                                $(".result h2").html("You got an A for Effort! <br><br>But.... your score is  " + scAdv + "/100.<br><br><br>Let's try again !!!<br><br>");
-                            } else if (scAdv < 70) {
-                                $(".result h2").html("Nice try !!! <br><br>Your score is  " + scAdv + "/100 <br><br><br>You might get 100 if you try again !!!<br><br>");
-                            } else if (scAdv === 100) {
-                                $(".result h2").html("You got the PERFECT score !!! <br><br><br>Hope you enjoyed it !!!<br><br>")
-                            }
-                            $(".retry-btn").on("click", function () {
-                                scAdv = 0;
-                                $(".next-btn").attr('value', '1');
-                                $('input[type="radio"]:checked').each(function () {
-                                    $(this).prop('checked', false);
-                                });
-                                retryAdv();
-                            });
-                            /////
-                        }, 1000);
-                    }
-
-                });
-
-            });
-        }
-
-
-
-
-
+        showAdv.moveToQuestion();
+        showAdv.addQuestion();
     });
+
+    $('#retry-btn').on('click', function () {
+        showAdv.score = 0;
+        showAdv.questionNum = 0;
+        showAdv.addQuestion();
+    });
+    /////
+
+
+
 
 });
 
 
 
 
-
-// answers
-console.log("answers:");
-console.log("1. C. John and Mary");
-console.log("2. C. in the 19th century, when it became a symbol of the abolition of slavery");
-console.log("3. A. Buttermilk");
-console.log("4. C. a four-story Georgian-style home in Missouri");
-console.log("5. B. compact disk player");
-console.log("6. C. Byron Nelson");
-console.log("7. C. Willie Mays");
-console.log("8. B. 18");
-console.log("9. A. cocker spaniel");
-console.log("10. D. Joe Louis");
