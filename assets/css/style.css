@@ -33,7 +33,9 @@ body {
 .next-btn {
     float: right;
 }
-
+.gameOver {
+    text-align: center;
+}
 .result {
     padding-top: 30px;
     text-align: center;
