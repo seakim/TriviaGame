@@ -52,9 +52,15 @@ $(document).ready(function () {
         intervalId: null,
         container: null,
         time: null,
+        countCallback: null,
         setContainer: function(number) {
             this.container = $('#timer');
             this.time = parseInt(number);
+        },
+        setCountCallback(countCallback){
+            if(typeof countCallback !== 'undefined'){
+                this.countCallback = countCallback;
+            }
         },
         //??? how can I set 'reset' as default time without passing parameter? ???
         reset: function(number) {
@@ -78,6 +84,10 @@ $(document).ready(function () {
             this.container.html(converted);
             if (this.time <= 0) {
                 this.stop();
+                if(typeof this.countCallback !== 'undefined'){
+                    this.countCallback();
+                }
+                
             }
         },
         timeConverter: function (t) {
@@ -127,14 +137,20 @@ $(document).ready(function () {
         },
         // ### Timer component for Option One: Basic Quiz (Timed Form)    
         startReg: function () {
+            // for (var i = mcArr.length - 1; i > -1; i--) {
+            //     var mc='';
+            //     for (var j = 0; j < mcArr[i].length; j++) {
+            //         mc += '<div class="radio"><label><input type="radio" name="selection' + i + '"><span>' + mcArr[i][j] + '</span></label></div>';
+            //     }
+            //     var question = '<div class="question q' + i + '" id="' + i + '" value="' + i + '"><h5 id="q' + i + '">' + questionArr[i] + '</h5>' + mc + '<br></div>';
+            //     $(".trivia").prepend(question);
+            // }
             $(".intro").hide();
             $(".trivia").fadeIn(1000);
             timerReg.start();
-            setTimeout(() => {
-                if (timerReg.time === 0) 
-                { this.showScoreReg(); }
-            }, 120500); /////
+            timerReg.setCountCallback(this.showScoreReg.bind(this));
         },
+
         retryReg: function () {
             this.score = 0;
             this.questionNum = 0;
@@ -146,12 +162,10 @@ $(document).ready(function () {
             $(".trivia").fadeIn(1000);
             timerReg.reset(120);
             timerReg.start();
-            setTimeout(() => {
-                if (timerReg.time === 0) 
-                { this.showScoreReg(); }
-            }, 120500); /////
+            timerReg.setCountCallback(this.showScoreReg.bind(this));
         },
         showScoreReg: function () {
+            // event.preventDefault(); //??? showScore does not recognize the radio added on startReg ???
             timerReg.stop();
             $('input[type="radio"]:checked').each(function () {
                 var isCorrect = $(this).parent().parent().attr("value");
@@ -192,12 +206,9 @@ $(document).ready(function () {
                 }
             });
             //??? the below makes it break; ???
-            // console.log($(this).hasClass("mc"));
-            // setTimeout(() => {
-            //     if (!$(this).hasClass("mc")) {
-            //         this.ifWrong();
-            //     }
-            // }, 15000);
+            console.log($(this).hasClass("mc"));
+            timerAdv.setCountCallback(this.ifWrong.bind(this));
+
         },
 
         ifCorrect: function () {
@@ -263,10 +274,6 @@ $(document).ready(function () {
         trivia.retryAdv();
     });
     /////
-
-
-
-
 });
 
 
