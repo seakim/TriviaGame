@@ -205,7 +205,6 @@ $(document).ready(function () {
                     trivia.ifWrong();
                 }
             });
-            //??? the below makes it break; ???
             console.log($(this).hasClass("mc"));
             timerAdv.setCountCallback(this.ifWrong.bind(this));
 

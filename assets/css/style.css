@@ -4,9 +4,9 @@ body {
 .container {
     max-width: 720px;
 }
-#rcb {
+.title {
     color: white;
-    text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
+    text-shadow: 1px 1px 2px black, 0 0 25px white, 0 0 5px black;
     margin-bottom: 50px;
     text-align: center;
 }
@@ -22,7 +22,7 @@ body {
 #timer {
     position: fixed;
     top: 3%;
-    right: 5%;
+    right: 20%;
     color: rgba(1,1,1,0.3);
     font-weight: bold;
 }
